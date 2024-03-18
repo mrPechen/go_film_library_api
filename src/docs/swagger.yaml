@@ -1,0 +1,433 @@
+definitions:
+  database.Actor:
+    properties:
+      birth_date:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  database.Film:
+    properties:
+      actor_ids:
+        items:
+          type: integer
+        type: array
+      actors:
+        items:
+          $ref: '#/definitions/database.Actor'
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rate:
+        type: integer
+      release_date:
+        type: string
+    type: object
+  database.FilmWithActors:
+    properties:
+      actors:
+        items:
+          $ref: '#/definitions/database.Actor'
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rate:
+        type: integer
+      release_date:
+        type: string
+    type: object
+  database.UpdateFilmWithActors:
+    properties:
+      actors:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rate:
+        type: integer
+      release_date:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /actor-delete:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет актера из базы данных по его идентификатору
+      parameters:
+      - description: Идентификатор актера для удаления
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Успешное удаление актера
+          schema:
+            type: string
+        "400":
+          description: Отсутствует обязательный параметр 'id'
+          schema:
+            type: string
+        "404":
+          description: Актер не найден
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удаление актера по идентификатору
+      tags:
+      - actor
+  /api/actor:
+    get:
+      description: Получает информацию об актере
+      parameters:
+      - description: ID актера для обновления
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Actor'
+      summary: Получить информацию об актере
+      tags:
+      - actor
+  /api/actor-create/:
+    post:
+      consumes:
+      - application/json
+      description: Создать актера
+      parameters:
+      - description: Данные для создания актера
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/database.Actor'
+      responses:
+        "201":
+          description: Created
+      summary: Создать актера
+      tags:
+      - actor
+  /api/actor-update:
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет информацию об актере на основе предоставленных данных
+      parameters:
+      - description: ID актера для обновления
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления актера
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/database.Actor'
+      responses:
+        "201":
+          description: Created
+      summary: Обновить информацию об актере
+      tags:
+      - actor
+  /api/actors/:
+    get:
+      description: Получает информацию об актерах
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Actor'
+            type: array
+      summary: Получить информацию об актерах
+      tags:
+      - actor
+  /api/film:
+    get:
+      consumes:
+      - application/json
+      description: Поиск фильма по названию фильма или имени актера
+      parameters:
+      - description: Фрагмент названия фильма
+        in: query
+        name: film_name
+        type: string
+      - description: фрагмент имени актера
+        in: query
+        name: actor_name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Фильм
+          schema:
+            items:
+              $ref: '#/definitions/database.FilmWithActors'
+            type: array
+        "400":
+          description: Отсутствует обязательный параметр 'id'
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Поиск фильма по названию фильма или имени актера
+      tags:
+      - film
+  /api/film-create/:
+    post:
+      consumes:
+      - application/json
+      description: Создание нового фильма
+      parameters:
+      - description: Данные для создания фильма
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/database.Film'
+      responses:
+        "201":
+          description: Film created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Создание нового фильма
+      tags:
+      - film
+  /api/film-delete:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет фильм из базы данных по его идентификатору
+      parameters:
+      - description: Идентификатор фильма для удаления
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Успешное удаление фильма
+          schema:
+            type: string
+        "400":
+          description: Отсутствует обязательный параметр 'id'
+          schema:
+            type: string
+        "404":
+          description: Фильм не найден
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удаление фильма по идентификатору
+      tags:
+      - film
+  /api/film-update:
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет информацию о фильме и его актерах в базе данных
+      parameters:
+      - description: Идентификатор фильма для обновления
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления фильма
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/database.UpdateFilmWithActors'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Фильм успешно обновлен
+          schema:
+            type: string
+        "400":
+          description: Отсутствует обязательный параметр 'id' или некорректные данные
+            JSON
+          schema:
+            type: string
+        "404":
+          description: Фильм не найден
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Обновление фильма
+      tags:
+      - film
+  /api/films:
+    get:
+      consumes:
+      - application/json
+      description: Получить все фильмы
+      parameters:
+      - description: Значения sort_by (name, release_date, rate)
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список фильмов
+          schema:
+            items:
+              $ref: '#/definitions/database.FilmWithActors'
+            type: array
+        "400":
+          description: Отсутствует обязательный параметр 'id'
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Получить все фильмы
+      tags:
+      - film
+  /api/login/:
+    post:
+      consumes:
+      - application/json
+      description: Аутентификация пользователя по электронной почте и паролю.
+      parameters:
+      - description: Email пользователя
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Пароль пользователя
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная аутентификация и выдача токенов
+        "400":
+          description: Ошибка декодирования запроса
+        "404":
+          description: Пользователь не найден
+        "500":
+          description: Ошибка сервера
+      summary: Вход пользователя
+      tags:
+      - authentication
+  /api/refresh-tokens/:
+    post:
+      consumes:
+      - application/json
+      description: Обновляет токены доступа и обновления пользователя.
+      parameters:
+      - description: Обновляющий токен
+        in: query
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление токенов
+        "400":
+          description: Отсутствует обязательный параметр 'refresh_token'
+        "401":
+          description: Неверный обновляющий токен
+        "500":
+          description: Внутренняя ошибка сервера
+      summary: Обновление токенов доступа и обновления
+      tags:
+      - authentication
+  /api/registration/:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя в системе и выдает ему токены
+        доступа
+      parameters:
+      - description: Email пользователя
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Пароль пользователя
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: Роль пользователя ('user' или 'admin')
+        in: formData
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешная регистрация и вход
+        "400":
+          description: Некорректные данные для регистрации
+        "500":
+          description: Ошибка сервера
+      summary: Регистрация пользователя
+      tags:
+      - authentication
+swagger: "2.0"

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: test_db_server
+    image: postgres:latest
+    env_file:
+      - src/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - test_api
+
+  server:
+    container_name: test_api_server
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    depends_on:
+      - db
+    env_file:
+      - src/.env
+    ports:
+      - "8080:8080"
+    networks:
+      - test_api
+
+  test_runner:
+    container_name: tests
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.test_runner
+    depends_on:
+      - server
+    networks:
+      - test_api
+
+networks:
+  test_api:
+    driver: bridge

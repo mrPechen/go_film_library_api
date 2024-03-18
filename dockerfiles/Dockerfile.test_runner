@@ -1,0 +1,16 @@
+FROM golang:latest
+
+RUN apt-get update && apt-get install -y wget && \
+    wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz && \
+    tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.6.1.tar.gz && \
+    rm dockerize-linux-amd64-v0.6.1.tar.gz
+
+WORKDIR /app
+
+COPY . .
+
+RUN go mod download
+
+WORKDIR /app/src
+
+CMD ["dockerize", "-wait", "tcp://server:8080", "-timeout", "60s", "go", "test", "./test"]

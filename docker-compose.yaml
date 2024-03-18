@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db_server
+    image: postgres:latest
+    env_file:
+      - src/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - api
+
+  server:
+    container_name: api_server
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile
+    depends_on:
+      - db
+    env_file:
+      - src/.env
+    ports:
+      - "8080:8080"
+    networks:
+      - api
+
+networks:
+  api:
+    driver: bridge
